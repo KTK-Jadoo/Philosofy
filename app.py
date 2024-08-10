@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template_string
+from flask import Flask, request, jsonify, render_template
 from langchain_huggingface import HuggingFacePipeline
 from langchain_core.prompts.prompt import PromptTemplate
 from langchain_core.runnables import RunnableSequence
@@ -46,39 +46,6 @@ consistency_prompt = PromptTemplate.from_template(
 for_chain = RunnableSequence(for_prompt, llm)
 against_chain = RunnableSequence(against_prompt, llm)
 
-# HTML template
-HTML = '''
-<!doctype html>
-<html>
-    <head>
-        <title>Argument Generator</title>
-    </head>
-    <body>
-        <h1>Argument Generator</h1>
-        <form method="POST">
-            <textarea name="statement" rows="4" cols="50"></textarea><br>
-            <input type="submit" value="Generate Arguments">
-        </form>
-        {% if for_argument and against_argument %}
-        <h2>Results:</h2>
-        <h3>Argument For:</h3>
-        <p>{{ for_argument }}</p>
-        <h3>Argument Against:</h3>
-        <p>{{ against_argument }}</p>
-        <h3>Logical Consistency Score:</h3>
-        <p>{{ consistency_score }}</p>
-        <form method="POST" action="/feedback">
-            <input type="hidden" name="for_argument" value="{{ for_argument }}">
-            <input type="hidden" name="against_argument" value="{{ against_argument }}">
-            <label for="rating">Rate the arguments (1-5):</label>
-            <input type="number" name="rating" min="1" max="5"><br>
-            <input type="submit" value="Submit Feedback">
-        </form>
-        {% endif %}
-    </body>
-</html>
-'''
-
 # Function to check for biased or harmful content
 def content_filter(text):
     if re.search(r'\b(bias|harm|sensitive)\b', text, re.IGNORECASE):
@@ -92,8 +59,8 @@ def home():
         for_argument = content_filter(for_chain.invoke({"statement": statement}))
         against_argument = content_filter(against_chain.invoke({"statement": statement}))
         consistency_score = evaluate_consistency(for_argument, against_argument)
-        return render_template_string(HTML, for_argument=for_argument, against_argument=against_argument, consistency_score=consistency_score)
-    return render_template_string(HTML)
+        return render_template('index.html', for_argument=for_argument, against_argument=against_argument, consistency_score=consistency_score)
+    return render_template('index.html')
 
 @app.route('/generate_arguments', methods=['POST'])
 def generate_arguments():
