@@ -12,24 +12,29 @@ model_name = "google/flan-t5-base"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
-# Create a text-generation pipeline
+# Create a text-generation pipeline with enhanced parameters
 pipe = pipeline(
     "text2text-generation",
     model=model, 
     tokenizer=tokenizer, 
-    max_length=512
+    max_length=1024,  # Increased max_length for more detailed responses
+    temperature=0.7,  # Adjusted temperature for more creative outputs
+    top_p=0.9,        # Use nucleus sampling for more diverse outputs
+    do_sample=True    # Enable sampling to allow temperature and top_p to take effect
 )
 
 # Create LangChain LLM
 llm = HuggingFacePipeline(pipeline=pipe)
 
-# Create prompt templates for generating arguments
+# Enhanced prompt templates for generating more persuasive arguments
 for_prompt = PromptTemplate.from_template(
-    "Generate a logically sound argument in favor of the following statement: {statement}"
+    "You are a skilled lawyer arguing in favor of the following statement: {statement}. "
+    "Present a strong, logical argument using evidence, examples, and persuasive techniques to convince others of its validity."
 )
 
 against_prompt = PromptTemplate.from_template(
-    "Generate a logically sound argument against the following statement: {statement}"
+    "You are a skilled lawyer arguing against the following statement: {statement}. "
+    "Present a strong, logical argument using evidence, examples, and persuasive techniques to convince others that it is incorrect."
 )
 
 # Create a prompt template for evaluating logical consistency
