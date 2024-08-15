@@ -27,16 +27,16 @@ pipe = pipeline(
 # Create LangChain LLM
 llm = HuggingFacePipeline(pipeline=pipe)
 
-# Enhanced prompt templates for generating comprehensive arguments
 for_prompt = PromptTemplate.from_template(
-    "You are a seasoned lawyer presenting a multi-paragraph argument in favor of the statement: '{statement}'. "
-    "Ensure that your argument includes an introduction, several key points with evidence, and a conclusion."
+    "You are a skilled debater presenting a multi-paragraph argument in favor of the statement: '{statement}'. "
+    "Your argument should include an introduction, three key points supported by evidence or examples, and a strong conclusion."
 )
 
 against_prompt = PromptTemplate.from_template(
-    "You are a seasoned lawyer presenting a multi-paragraph argument against the statement: '{statement}'. "
-    "Ensure that your argument includes an introduction, several key points with evidence, and a conclusion."
+    "You are a skilled debater presenting a multi-paragraph argument against the statement: '{statement}'. "
+    "Your argument should include an introduction, three key points supported by evidence or examples, and a strong conclusion."
 )
+
 
 # Create a prompt template for evaluating logical consistency
 consistency_prompt = PromptTemplate.from_template(
