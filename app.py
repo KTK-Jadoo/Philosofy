@@ -2,41 +2,42 @@ from flask import Flask, request, jsonify, render_template
 from langchain_huggingface import HuggingFacePipeline
 from langchain_core.prompts.prompt import PromptTemplate
 from langchain_core.runnables import RunnableSequence
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 import re
 
 app = Flask(__name__)
 
-# Initialize FLAN-T5 model
-model_name = "google/flan-t5-base"
+# Initialize LLaMA 3.1 model
+model_name = "meta-llama/Llama-2-7b-chat-hf"  # Replace with the correct model path for LLaMA 3.1 when available
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
 
 # Create a text-generation pipeline with enhanced parameters
 pipe = pipeline(
-    "text2text-generation",
+    "text-generation",  # Changed to text-generation since LLaMA is a causal language model
     model=model, 
     tokenizer=tokenizer, 
-    max_length=2048,  # Increased max_length for more detailed and multi-paragraph responses
-    temperature=0.65,  # Slightly reduced temperature for more focused arguments
-    top_p=0.85,        # Nucleus sampling with a lower top_p for more coherent outputs
-    do_sample=True,    # Enable sampling to allow temperature and top_p to take effect
-    repetition_penalty=1.2  # Added repetition penalty to reduce redundancy
+    max_length=2048,  # Ensure this is high enough for detailed output
+    temperature=0.6,  # Slightly reduce temperature for focused output
+    top_p=0.85,       # Use nucleus sampling for coherent output
+    do_sample=True,   # Enable sampling
+    repetition_penalty=1.1  # Slight penalty to avoid repetitive sentences
 )
 
 # Create LangChain LLM
 llm = HuggingFacePipeline(pipeline=pipe)
 
 for_prompt = PromptTemplate.from_template(
-    "You are a skilled debater presenting a multi-paragraph argument in favor of the statement: '{statement}'. "
-    "Your argument should include an introduction, three key points supported by evidence or examples, and a strong conclusion."
+    "As a skilled debater, write a detailed multi-paragraph argument in favor of the statement: '{statement}'. "
+    "Start with a strong introduction, followed by three well-supported points, each with evidence or examples, "
+    "and finish with a compelling conclusion that reinforces your stance."
 )
 
 against_prompt = PromptTemplate.from_template(
-    "You are a skilled debater presenting a multi-paragraph argument against the statement: '{statement}'. "
-    "Your argument should include an introduction, three key points supported by evidence or examples, and a strong conclusion."
+    "As a skilled debater, write a detailed multi-paragraph argument against the statement: '{statement}'. "
+    "Start with a strong introduction, followed by three well-supported points, each with evidence or examples, "
+    "and finish with a compelling conclusion that reinforces your stance."
 )
-
 
 # Create a prompt template for evaluating logical consistency
 consistency_prompt = PromptTemplate.from_template(
