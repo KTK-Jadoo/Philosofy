@@ -1,32 +1,57 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Argument Generator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Philosofy - Argument Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
-    <h1>Argument Generator</h1>
-    <form method="POST">
-        <textarea name="statement" rows="4" cols="50"></textarea><br>
-        <input type="submit" value="Generate Arguments">
-    </form>
-    {% if for_argument and against_argument %}
-    <h2>Results:</h2>
-    <h3>Argument For:</h3>
-    <p>{{ for_argument }}</p>
-    <h3>Argument Against:</h3>
-    <p>{{ against_argument }}</p>
-    <h3>Logical Consistency Score:</h3>
-    <p>{{ consistency_score }}</p>
-    <form method="POST" action="/feedback">
-        <input type="hidden" name="for_argument" value="{{ for_argument }}">
-        <input type="hidden" name="against_argument" value="{{ against_argument }}">
-        <label for="rating">Rate the arguments (1-5):</label>
-        <input type="number" name="rating" min="1" max="5"><br>
-        <input type="submit" value="Submit Feedback">
-    </form>
-    {% endif %}
+    <div class="container">
+        <header>
+            <h1>Philosofy</h1>
+            <h2>Debate Simulator</h2>
+        </header>
+
+        <section class="input-section">
+            <h3>Enter a Statement to Generate Arguments</h3>
+            <form method="POST">
+                <textarea name="statement" rows="4" cols="50" placeholder="Type your statement here..."></textarea><br>
+                <input type="submit" value="Generate Arguments">
+            </form>
+        </section>
+
+        {% if for_argument and against_argument %}
+        <section class="results-section">
+            <h3>Generated Arguments</h3>
+            <div class="argument">
+                <h4>Argument For:</h4>
+                <p>{{ for_argument }}</p>
+            </div>
+            <div class="argument">
+                <h4>Argument Against:</h4>
+                <p>{{ against_argument }}</p>
+            </div>
+            <div class="consistency">
+                <h4>Logical Consistency Score:</h4>
+                <p>{{ consistency_score }}</p>
+            </div>
+        </section>
+
+        <section class="feedback-section">
+            <h3>Rate the Arguments</h3>
+            <form method="POST" action="/feedback">
+                <input type="hidden" name="for_argument" value="{{ for_argument }}">
+                <input type="hidden" name="against_argument" value="{{ against_argument }}">
+                <label for="rating">Rating (1-5):</label>
+                <input type="number" name="rating" min="1" max="5" required><br>
+                <input type="submit" value="Submit Feedback">
+            </form>
+        </section>
+        {% endif %}
+    </div>
 </body>
 
 </html>

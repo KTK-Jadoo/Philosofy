@@ -17,24 +17,25 @@ pipe = pipeline(
     "text2text-generation",
     model=model, 
     tokenizer=tokenizer, 
-    max_length=1024,  # Increased max_length for more detailed responses
-    temperature=0.7,  # Adjusted temperature for more creative outputs
-    top_p=0.9,        # Use nucleus sampling for more diverse outputs
-    do_sample=True    # Enable sampling to allow temperature and top_p to take effect
+    max_length=2048,  # Increased max_length for more detailed and multi-paragraph responses
+    temperature=0.65,  # Slightly reduced temperature for more focused arguments
+    top_p=0.85,        # Nucleus sampling with a lower top_p for more coherent outputs
+    do_sample=True,    # Enable sampling to allow temperature and top_p to take effect
+    repetition_penalty=1.2  # Added repetition penalty to reduce redundancy
 )
 
 # Create LangChain LLM
 llm = HuggingFacePipeline(pipeline=pipe)
 
-# Enhanced prompt templates for generating more persuasive arguments
+# Enhanced prompt templates for generating comprehensive arguments
 for_prompt = PromptTemplate.from_template(
-    "You are a skilled lawyer arguing in favor of the following statement: {statement}. "
-    "Present a strong, logical argument using evidence, examples, and persuasive techniques to convince others of its validity."
+    "You are a seasoned lawyer presenting a multi-paragraph argument in favor of the statement: '{statement}'. "
+    "Ensure that your argument includes an introduction, several key points with evidence, and a conclusion."
 )
 
 against_prompt = PromptTemplate.from_template(
-    "You are a skilled lawyer arguing against the following statement: {statement}. "
-    "Present a strong, logical argument using evidence, examples, and persuasive techniques to convince others that it is incorrect."
+    "You are a seasoned lawyer presenting a multi-paragraph argument against the statement: '{statement}'. "
+    "Ensure that your argument includes an introduction, several key points with evidence, and a conclusion."
 )
 
 # Create a prompt template for evaluating logical consistency
