@@ -4,7 +4,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
@@ -39,7 +39,7 @@ header h2 {
 }
 
 input[type="submit"],
-input[type="number"] {
+input[type="button"] {
     display: inline-block;
     margin-top: 10px;
     padding: 10px 15px;
@@ -51,7 +51,8 @@ input[type="number"] {
     cursor: pointer;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover,
+input[type="button"]:hover {
     background-color: #0056b3;
 }
 
@@ -96,4 +97,68 @@ textarea:focus {
 .feedback-section label {
     font-size: 1.1em;
     margin-right: 10px;
+}
+
+.dropdown-section {
+    margin-bottom: 20px;
+}
+
+.dropdown-btn {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 15px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dropdown-btn:hover {
+    background-color: #0056b3;
+}
+
+.dropdown-content {
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.dropdown-content ul {
+    list-style-position: inside;
+    /* Ensure bullets are inside the padding area */
+    padding-left: 20px;
+    /* Add padding to the left to prevent clipping */
+    margin-top: 10px;
+}
+
+.dropdown-content ul li {
+    margin-bottom: 8px;
+    /* Add some space between list items */
+}
+
+.dropdown-content h3 {
+    margin-top: 10px;
+    /* Add space above headings */
+}
+
+.spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #007BFF;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }

@@ -1,82 +1,65 @@
-<!doctype html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Philosofy - Debate Simulator</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
+{% block title %}Philosofy - Generate Arguments{% endblock %}
 
-<body>
-    <div class="container">
-        <header>
-            <h1>Philosofy</h1>
-            <h2>Debate Simulator</h2>
-        </header>
+{% block content %}
+<section class="dropdown-section">
+    <button class="dropdown-btn" onclick="toggleDropdown()">Instructions & Documentation</button>
+    <div class="dropdown-content" id="dropdownContent" style="display: none;">
+        <h3>Instructions</h3>
+        <ul>
+            <li>Enter a statement in the text box below and click "Generate Arguments" to start the debate.</li>
+            <li>The system will generate both a "for" and "against" argument based on your statement.</li>
+            <li>You can continue the debate by entering your own response to either argument.</li>
+            <li>The system will provide a counterargument to your response.</li>
+        </ul>
 
-        <section class="input-section">
-            <h3>Enter a Statement to Generate Arguments</h3>
-            <form method="POST">
-                <textarea name="statement" rows="4" cols="50" placeholder="Type your statement here..."></textarea><br>
-                <input type="submit" value="Generate Arguments">
-            </form>
-        </section>
-
-        {% if for_argument and against_argument %}
-        <section class="results-section">
-            <h3>Generated Arguments</h3>
-            <div class="argument">
-                <h4>Argument For:</h4>
-                <p>{{ for_argument }}</p>
-            </div>
-            <div class="argument">
-                <h4>Argument Against:</h4>
-                <p>{{ against_argument }}</p>
-            </div>
-        </section>
-
-        <section class="continue-debate-section">
-            <h3>Continue the Debate</h3>
-            <form id="continue-debate-form">
-                <textarea id="user_response" rows="4" cols="50" placeholder="Type your response here..."></textarea><br>
-                <input type="hidden" id="previous_statement" value="{{ statement }}">
-                <input type="button" value="Continue Debate" onclick="continueDebate()">
-            </form>
-            <div id="counter-argument"></div>
-        </section>
-        {% endif %}
+        <h3>Documentation</h3>
+        <p>
+            This debate simulator is powered by the LLaMA 3 model integrated via the Ollama API and LangChain framework.
+            It uses advanced natural language processing to generate logically sound arguments based on user-provided
+            statements.
+        </p>
+        <p>
+            The application supports multi-step debates, allowing users to interactively continue the argument and
+            receive real-time counterarguments.
+            For more information, visit the <a href="https://github.com/ollama/ollama" target="_blank">Ollama
+                Documentation</a>.
+        </p>
     </div>
+</section>
 
-    <script>
-        function continueDebate() {
-            const previousStatement = document.getElementById('previous_statement').value;
-            const userResponse = document.getElementById('user_response').value;
+<section class="input-section">
+    <h3>Enter a Statement to Generate Arguments</h3>
+    <form id="argumentForm" method="POST" onsubmit="showLoadingSpinner()">
+        <textarea name="statement" rows="4" cols="50" placeholder="Type your statement here..."></textarea><br>
+        <input type="submit" value="Generate Arguments">
+    </form>
+    <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+    <p id="processingMessage" style="display: none;">This could take 10-20 seconds...</p>
+</section>
 
-            fetch('/continue_debate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    previous_statement: previousStatement,
-                    user_response: userResponse
-                }),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.counter_argument) {
-                        document.getElementById('counter-argument').innerHTML = `
-                        <h4>Counter Argument:</h4>
-                        <p>${data.counter_argument}</p>
-                    `;
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-        }
-    </script>
-</body>
+{% if for_argument and against_argument %}
+<section class="results-section">
+    <h3>Generated Arguments</h3>
+    <div class="argument">
+        <h4>Argument For:</h4>
+        <p id="forArgument">{{ for_argument }}</p>
+    </div>
+    <div class="argument">
+        <h4>Argument Against:</h4>
+        <p id="againstArgument">{{ against_argument }}</p>
+    </div>
+</section>
 
-</html>
+<section class="continue-debate-section">
+    <h3>Continue the Debate</h3>
+    <form id="continue-debate-form">
+        <textarea id="user_response" rows="4" cols="50" placeholder="Type your response here..."></textarea><br>
+        <input type="hidden" id="previous_statement" value="{{ statement }}">
+        <input type="button" value="Continue Debate" onclick="continueDebate()">
+    </form>
+    <div id="counter-argument"></div>
+</section>
+{% endif %}
+{% endblock %}
