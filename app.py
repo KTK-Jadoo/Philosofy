@@ -5,6 +5,8 @@ from langchain_core.runnables import RunnableSequence
 import psycopg2
 import re
 import os
+import sqlite3
+
 
 app = Flask(__name__)
 
@@ -28,14 +30,25 @@ against_chain = RunnableSequence(against_prompt, llm)
 
 # Database connection setup
 def get_db_connection():
-    conn = psycopg2.connect(
-        dbname="philosify_feedbacks_db",
-        user="Jadoo",        # Replace with your PostgreSQL username
-        password=os.getenv("POSTGRESQL_PASSWORD"), # Replace with your PostgreSQL password
-        host="localhost",
-        port="5432"
-    )
+    conn = sqlite3.connect('database.db')  # This will create a file named 'database.db'
+    conn.row_factory = sqlite3.Row         # This allows accessing columns by name
     return conn
+
+
+def init_db():
+    conn = get_db_connection()
+    with conn:
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS feedback (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                for_argument TEXT NOT NULL,
+                against_argument TEXT NOT NULL,
+                rating INTEGER NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+    conn.close()
+
 
 # Function to check for biased or harmful content
 def content_filter(text):
@@ -60,18 +73,16 @@ def feedback():
     against_argument = request.form.get('against_argument')
     rating = int(request.form.get('rating'))
     
-    # Store feedback in PostgreSQL database
     conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute(
-        "INSERT INTO feedback (for_argument, against_argument, rating) VALUES (%s, %s, %s)",
-        (for_argument, against_argument, rating)
-    )
-    conn.commit()
-    cur.close()
-    conn.close()
+    with conn:
+        conn.execute(
+            'INSERT INTO feedback (for_argument, against_argument, rating) VALUES (?, ?, ?)',
+            (for_argument, against_argument, rating)
+        )
     
     return jsonify({"message": "Feedback received"}), 200
 
 if __name__ == '__main__':
+    init_db()  # Initialize the database with the feedback table
     app.run(debug=True)
+

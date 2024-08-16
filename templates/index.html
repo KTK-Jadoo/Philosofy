@@ -52,6 +52,21 @@
     </div>
 </section>
 
+<!-- Feedback Section -->
+<section class="feedback-section">
+    <h3>Rate the Arguments</h3>
+    <form id="feedbackForm" onsubmit="submitFeedback(event)">
+        <input type="hidden" name="for_argument" value="{{ for_argument }}">
+        <input type="hidden" name="against_argument" value="{{ against_argument }}">
+        <label for="rating">Rating (1-5):</label>
+        <input type="number" name="rating" min="1" max="5" required><br>
+        <input type="submit" value="Submit Feedback">
+    </form>
+    <div id="feedbackMessage" style="display: none;"></div>
+</section>
+
+</section>
+
 <section class="continue-debate-section">
     <h3>Continue the Debate</h3>
     <form id="continue-debate-form">

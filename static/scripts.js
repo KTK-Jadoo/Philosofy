@@ -63,3 +63,28 @@ function continueDebate() {
             console.error('Error:', error);
         });
 }
+
+function submitFeedback(event) {
+    event.preventDefault(); // Prevent the form from submitting the traditional way
+
+    const form = document.getElementById('feedbackForm');
+    const formData = new FormData(form);
+
+    fetch('/feedback', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            // Display a message to the user
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            feedbackMessage.innerText = data.message;
+            feedbackMessage.style.display = 'block';
+
+            // Optionally reset the form or disable it after submission
+            form.reset();
+        })
+        .catch(error => {
+            console.error('Error submitting feedback:', error);
+        });
+}
