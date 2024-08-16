@@ -82,6 +82,25 @@ def feedback():
     
     return jsonify({"message": "Feedback received"}), 200
 
+@app.route('/continue_debate', methods=['POST'])
+def continue_debate():
+    data = request.json
+    previous_statement = data.get('previous_statement')
+    user_response = data.get('user_response')
+    
+    if not previous_statement or not user_response:
+        return jsonify({"error": "No statement or response provided"}), 400
+    
+    # Generate a counterargument based on the user's response
+    counter_argument = content_filter(against_chain.invoke({"statement": user_response}))
+    
+    return jsonify({
+        "previous_statement": previous_statement,
+        "user_response": user_response,
+        "counter_argument": counter_argument
+    })
+
+
 if __name__ == '__main__':
     init_db()  # Initialize the database with the feedback table
     app.run(debug=True)

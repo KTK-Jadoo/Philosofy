@@ -88,3 +88,28 @@ function submitFeedback(event) {
             console.error('Error submitting feedback:', error);
         });
 }
+
+
+function continueDebate() {
+    const userResponse = document.getElementById('user_response').value;
+    const previousStatement = document.getElementById('previous_statement').value;
+
+    fetch('/continue_debate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            previous_statement: previousStatement,
+            user_response: userResponse
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            const counterArgumentDiv = document.getElementById('counter-argument');
+            counterArgumentDiv.innerText = data.counter_argument;
+        })
+        .catch(error => {
+            console.error('Error continuing debate:', error);
+        });
+}
