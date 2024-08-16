@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Philosofy - Argument Generator</title>
+    <title>Philosofy - Debate Simulator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
@@ -34,24 +34,49 @@
                 <h4>Argument Against:</h4>
                 <p>{{ against_argument }}</p>
             </div>
-            <div class="consistency">
-                <h4>Logical Consistency Score:</h4>
-                <p>{{ consistency_score }}</p>
-            </div>
         </section>
 
-        <section class="feedback-section">
-            <h3>Rate the Arguments</h3>
-            <form method="POST" action="/feedback">
-                <input type="hidden" name="for_argument" value="{{ for_argument }}">
-                <input type="hidden" name="against_argument" value="{{ against_argument }}">
-                <label for="rating">Rating (1-5):</label>
-                <input type="number" name="rating" min="1" max="5" required><br>
-                <input type="submit" value="Submit Feedback">
+        <section class="continue-debate-section">
+            <h3>Continue the Debate</h3>
+            <form id="continue-debate-form">
+                <textarea id="user_response" rows="4" cols="50" placeholder="Type your response here..."></textarea><br>
+                <input type="hidden" id="previous_statement" value="{{ statement }}">
+                <input type="button" value="Continue Debate" onclick="continueDebate()">
             </form>
+            <div id="counter-argument"></div>
         </section>
         {% endif %}
     </div>
+
+    <script>
+        function continueDebate() {
+            const previousStatement = document.getElementById('previous_statement').value;
+            const userResponse = document.getElementById('user_response').value;
+
+            fetch('/continue_debate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    previous_statement: previousStatement,
+                    user_response: userResponse
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.counter_argument) {
+                        document.getElementById('counter-argument').innerHTML = `
+                        <h4>Counter Argument:</h4>
+                        <p>${data.counter_argument}</p>
+                    `;
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
 </body>
 
 </html>
